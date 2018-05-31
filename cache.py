@@ -16,7 +16,7 @@ def load_cache():
 def save_cache():
 	global cache
 	with open(CACHEFILE, "w") as f:
-		f.write(json.dumps(cache))
+		f.write(json.dumps(cache, sort_keys=True, separators=(',', ':')))
 		
 async def getcache(client, M, argv):
 	save_cache()
