@@ -1,16 +1,17 @@
 # arghelper
 Discord bot to help with generic ARG solving.
 
-# Commands
+## Synopsis
 
-`check [-v] {query}`
+<pre>
+check [-v] <em>query</em>...
+</pre>
 
-`[]` = optional flag(s)\
-`{}` = input variable
+## Description
 
-Sends url requests to multiple file hosting services.\
+Sends url requests to multiple file hosting services.
 Current available services:
-* imgur
-* tinyimg
-* cubeupload
-* youtube
+* Imgur.com
+* tinyimg.io
+* cubeupload.com
+* youtube.co
