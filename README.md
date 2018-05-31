@@ -25,6 +25,13 @@ Also tries suffixes, where applicable:
 * .png
 * .jpg
 
+## Options
+
+| Flag | Effect                         |
+|------|--------------------------------|
+| `-v` | Verbose output every URL tried |
+
+
 Naturally, it won't try anything like `https://youtube.com/watch?v=dQw4w9WgXcQ.png`
 
 ## Fast
