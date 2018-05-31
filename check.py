@@ -1,4 +1,5 @@
 import discord, pycurl, sys
+import cache
 
 
 bases = {
@@ -14,21 +15,29 @@ suffixes = [
 	".gif"
 ]
 
+
 def try_url(url, curl_verb=False, agent=None):
 	"""Actually do the http request"""
-	try:
-		curl = pycurl.Curl()
-		curl.setopt(curl.NOBODY, True)
-		curl.setopt(curl.VERBOSE, curl_verb)
-		if(agent != None):
-			curl.setopt(curl.USERAGENT, agent)
-		curl.setopt(curl.URL, url)
-		curl.perform()
-		code = curl.getinfo(pycurl.HTTP_CODE)
-		print("> HEAD {:35}: {}".format(url, code))
-		return code
-	except:
-		return str(sys.exc_info())
+	from_cache = cache.get(url)
+
+	if(from_cache != None):
+		print("(CACHE) {:35}: {}".format(url, from_cache))
+		return from_cache
+	else:
+		try:
+			curl = pycurl.Curl()
+			curl.setopt(curl.NOBODY, True)
+			curl.setopt(curl.VERBOSE, curl_verb)
+			if(agent != None):
+				curl.setopt(curl.USERAGENT, agent)
+			curl.setopt(curl.URL, url)
+			curl.perform()
+			code = curl.getinfo(pycurl.HTTP_CODE)
+			cache.add(url, code)
+			print("> HEAD  {:35}: {}".format(url, code))
+			return code
+		except:
+			return str(sys.exc_info())
 
 
 def try_urls(thing, verbose=False, agent=None):

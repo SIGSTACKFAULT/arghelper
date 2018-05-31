@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-import discord, json, pycurl, check
+import discord, json, pycurl
+import check, cache
 
 
 VERSION="0.1"
@@ -21,7 +22,8 @@ client.curl_agent = USERAGENT
 
 cmds = {
 	"check"	: check.check,
-	"useragent" : check.getUserAgent
+	"useragent" : check.getUserAgent,
+	"getcache" : cache.getcache
 }
 
 @client.event
