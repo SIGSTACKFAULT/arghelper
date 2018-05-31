@@ -10,7 +10,8 @@ bases = {
 
 suffixes = [
 	".png",
-	".jpg"
+	".jpg",
+	".gif"
 ]
 
 def try_url(url, curl_verb=False, agent=None):
