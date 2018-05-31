@@ -15,3 +15,10 @@ Current available services:
 * tinyimg.io
 * cubeupload.com
 * youtube.com
+
+Also tries suffixes, where applicable:
+
+* .png
+* .jpg
+
+Naturally, it won't try anything like `https://youtube.com/watch?v=dQw4w9WgXcQ.png`
