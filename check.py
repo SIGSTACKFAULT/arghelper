@@ -4,7 +4,8 @@ import discord, pycurl, sys
 bases = {
 	"https://imgur.com/{arg}" : [200],
 	"https://i.cubeupload.com/{arg}{suffix}" : [200],
-	"https://tinyimg.io/i/{arg}{suffix}" : [200]
+	"https://tinyimg.io/i/{arg}{suffix}" : [200],
+	"https://www.youtube.com/watch?v={arg}" : [200]
 }
 
 suffixes = [
