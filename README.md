@@ -1,6 +1,8 @@
 # arghelper
 Discord bot to help with generic ARG solving.
 
+![Usage example screenshot](https://cdn.discordapp.com/attachments/397866475597201408/451588402140413973/unknown.png)
+
 ## Synopsis
 
 <pre>
@@ -32,4 +34,5 @@ It only does http HEAD reqests, so it doesn't waste any time downloading the act
 
 ## Configurable
 
-Adding new schemes is easy. There's an array at the top of `check.py`. It's also possible to specify which HTTP codes mean found, if you needed that for some reason.
+Adding new schemes is easy. There's an array at the top of `check.py`.
+It's also possible to specify which HTTP codes mean found, if you needed that for some reason.
