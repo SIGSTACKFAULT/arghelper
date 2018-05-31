@@ -14,4 +14,4 @@ Current available services:
 * Imgur.com
 * tinyimg.io
 * cubeupload.com
-* youtube.co
+* youtube.com
