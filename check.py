@@ -1,12 +1,12 @@
 import discord, pycurl, sys
-import cache
+import try_url
 
 
 bases = {
-	"https://imgur.com/{arg}" : [200],
-	"https://i.cubeupload.com/{arg}{suffix}" : [200],
-	"https://tinyimg.io/i/{arg}{suffix}" : [200],
-	"https://www.youtube.com/watch?v={arg}" : [200]
+	"https://imgur.com/{thing}" : [200],
+	"https://i.cubeupload.com/{thing}{suffix}" : [200],
+	"https://tinyimg.io/i/{thing}{suffix}" : [200],
+	"https://www.youtube.com/watch?v={thing}" : [200]
 }
 
 suffixes = [
@@ -15,55 +15,30 @@ suffixes = [
 	".gif"
 ]
 
+def permutations(thing):
+	# get 'em all, even if the base doesn't have a suffix:
+	p = []
+	for base in bases:
+		for suffix in suffixes:
+			# we need an immutable type for set(); we'll turn this into a dict later.
+			p.append((base, base.format(thing=thing, suffix=suffix)))
 
-def try_url(url, curl_verb=False, agent=None):
-	"""Actually do the http request"""
-	from_cache = cache.get(url)
+	# remove dupes
+	q = list(set(p))
 
-	if(from_cache != None):
-		print("(CACHE) {:35}: {}".format(url, from_cache))
-		return from_cache
-	else:
-		try:
-			curl = pycurl.Curl()
-			curl.setopt(curl.NOBODY, True)
-			curl.setopt(curl.VERBOSE, curl_verb)
-			if(agent != None):
-				curl.setopt(curl.USERAGENT, agent)
-			curl.setopt(curl.URL, url)
-			curl.perform()
-			code = curl.getinfo(pycurl.HTTP_CODE)
-			cache.add(url, code)
-			print("> HEAD  {:35}: {}".format(url, code))
-			return code
-		except:
-			return str(sys.exc_info())
+	#now make it back into a list of dicts.
+	r = {i[0]:i[1] for i in q}
+	return r
 
-
-def try_urls(thing, verbose=False, agent=None):
-	urls = []
-	for key, value in bases.items():
-		if("{suffix}" in key):
-			for suffix in suffixes:
-				urls.append((key, key.format(arg=thing, suffix=suffix)))
-		else:
-			urls.append((key, key.format(arg=thing, suffix="")))
-			
-	tries = {}
-	for i, url in enumerate(urls):
-		code = try_url(url[1], agent=agent)
-		for found_code in bases[url[0]]:
-			if((code == found_code) or (verbose==True)):
-				tries[url[1]] = code
-				break
-	return tries
-
-
-
-async def try_and_send(client, M, thing, verbose=False):
+async def try_and_send(client, M, thing, opts={}):
 	await client.send_typing(M.channel)
-	r = try_urls(thing, verbose=verbose, agent=client.curl_agent)
-	out = ["<{}> - {}".format(url,code) for url, code in r.items()]
+	p = permutations(thing)
+	out = []
+	for base, permutation in p.items():
+		code = try_url.try_url(permutation, opts=opts)
+		if((code in bases[base]) or (opts.get("verbose", False) == True)):
+			out.append("<{url}> - {code}".format(url=permutation, code=code))
+	
 	out.sort()
 	if(out == []):
 		await client.send_message(M.channel, "`{thing}`: None found.".format(thing=thing))
@@ -71,25 +46,47 @@ async def try_and_send(client, M, thing, verbose=False):
 		await client.send_message(M.channel, "\n".join(out))
 
 
+def parse_flags(argv):
+	opts = {
+		"nocache" : False,
+		"verbose" : False
+	}
+	opt_map = {
+		"nocache" : {
+			True : ["-c", "--nocache"],
+			False: ["-C", "--cache"]
+		},
+		"verbose" : {
+			True : ["-v", "--verbose"],
+			False: []
+		}
+	}
+	for option, triggers in opt_map.items():
+		for trigger, flags in triggers.items():
+			for flag in flags:
+				for i, arg in enumerate(argv):
+					if(arg == flag):
+						opts[option] = trigger
+						argv.pop(i)
+				
+	return opts, argv
+	
 
 async def check(client, M, argv):
+	"""The actual function called by main"""
+	opts, argv = parse_flags(argv)
 	ulist = argv[1:]
-	try:
-		ulist.pop(ulist.index("-v"))
-		verbose = True
-	except:
-		verbose = False
-		
 	if(ulist == []):
 		await client.send_message(M.channel, "?")
 	else:
 		for url in ulist:
-			await try_and_send(client, M, url, verbose=verbose)
+			await try_and_send(client, M, url, opts=opts)
 
 async def getUserAgent(client, M, argv):
 	await client.send_message(M.channel, "```\n"+client.curl_agent+"\n```")
 
 
+# Unit test.
 if(__name__ == "__main__"):
 	if("-v" in sys.argv):
 		curl_verb = True
