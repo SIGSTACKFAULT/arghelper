@@ -47,7 +47,8 @@ def parse_flags(argv):
 	opts = {
 		"nocache" : False,
 		"verbose" : False,
-		"agent"   : False
+		"agent"   : False,
+		"version" : False
 	}
 	opt_map = {
 		"nocache" : {
@@ -55,12 +56,13 @@ def parse_flags(argv):
 			False: ["-C", "--cache"]
 		},
 		"verbose" : {
-			True : ["-v", "--verbose"],
-			False: []
+			True : ["-v", "--verbose"]
 		},
 		"agent" : {
-			True : ["--agent"],
-			False: []
+			True : ["--agent"]
+		},
+		"version" : {
+			True : ["-V", "--version"]
 		}
 	}
 	for option, triggers in opt_map.items():
@@ -82,6 +84,9 @@ async def check(client, M, argv):
 	if(opts["agent"]):
 		await getUserAgent(client, M, argv)
 		return
+	elif(opts["version"]):
+		await getVersion(client, M, argv)
+		return
 	
 	if(ulist == []):
 		await client.send_message(M.channel, "?")
@@ -92,6 +97,8 @@ async def check(client, M, argv):
 
 async def getUserAgent(client, M, argv):
 	await client.send_message(M.channel, "`{}`".format(settings.USERAGENT))
+async def getVersion(client, M, argv):
+	await client.send_message(M.channel, settings.human_version())
 
 
 if(__name__ == "__main__"):
