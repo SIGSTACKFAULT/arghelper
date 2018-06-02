@@ -1,6 +1,6 @@
 import pycurl
 
-VERSION="0.1"
+VERSION="0.2.0"
 PREFIX="%"
 USERAGENT = "sbhelper/{bot_version} ({pycurl_version})".format(
 	bot_version=VERSION,
