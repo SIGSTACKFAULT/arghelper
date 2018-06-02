@@ -12,14 +12,14 @@ def blind_try(url, agent=None):
 	print("> HEAD  {url:40}:{code}".format(url=url, code=code))
 	return code
 
-def blind_try_cached(url, cache, agent=None):
+def blind_try_cached(url, C, agent=None):
 	"""Blindly look up the url, respecting the cache.
-	Pass cache as {} if you don't want me to look up in the cache."""
+	Pass cache as cache.fake if you don't want me to look up in the cache."""
 	
-	response = cache.get(url)
+	response = C.get(url)
 	if(response == None):
 		response = blind_try(url, agent=agent)
-		cache.add(url, response)
+		C.add(url, response)
 	else:
 		print("(CACHED) {url:40}:{code}".format(url=url, code=response))
 	
@@ -31,8 +31,10 @@ def try_url(url, opts={}):
 	agent = opts.get("useragent")
 	nocache = opts.get("nocache", False)
 	if(nocache == True):
-		arg_cache = {}
+		arg_cache = cache.fake
 	else:
 		arg_cache = cache.cache
 	
-	return blind_try_cached(url, arg_cache, agent=agent)
+	r = blind_try_cached(url, arg_cache, agent=agent)
+	cache.cache.save()
+	return r

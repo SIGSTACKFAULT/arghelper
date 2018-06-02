@@ -1,5 +1,5 @@
 import discord, pycurl, sys
-import try_url
+import try_url, settings
 
 from bases import bases
 
@@ -15,25 +15,28 @@ def permutations(thing):
 	for base in bases:
 		for suffix in suffixes:
 			# we need an immutable type for set(); we'll turn this into a dict later.
-			p.append((base, base.format(thing=thing, suffix=suffix)))
+			p.append((base.format(thing=thing, suffix=suffix), base))
 
 	# remove dupes
 	q = list(set(p))
 
-	#now make it back into a list of dicts.
-	r = {i[0]:i[1] for i in q}
-	return r
+	#now make it back into a big dict.
+	return {url:base for (url, base) in p}
 
-async def try_and_send(client, M, thing, opts={}):
-	await client.send_typing(M.channel)
+def try_urls(thing, opts={}):
 	p = permutations(thing)
 	out = []
-	for base, permutation in p.items():
+	for permutation, base in p.items():
 		code = try_url.try_url(permutation, opts=opts)
 		if((code in bases[base]) or (opts.get("verbose", False) == True)):
 			out.append("<{url}> - {code}".format(url=permutation, code=code))
 	
-	out.sort()
+	o = out#.sort()
+	return o
+
+async def try_and_send(client, M, thing, opts={}):
+	await client.send_typing(M.channel)
+	out = try_urls(thing, opts=opts)
 	if(out == []):
 		await client.send_message(M.channel, "`{thing}`: None found.".format(thing=thing))
 	else:
@@ -43,7 +46,8 @@ async def try_and_send(client, M, thing, opts={}):
 def parse_flags(argv):
 	opts = {
 		"nocache" : False,
-		"verbose" : False
+		"verbose" : False,
+		"agent"   : False
 	}
 	opt_map = {
 		"nocache" : {
@@ -52,6 +56,10 @@ def parse_flags(argv):
 		},
 		"verbose" : {
 			True : ["-v", "--verbose"],
+			False: []
+		},
+		"agent" : {
+			True : ["--agent"],
 			False: []
 		}
 	}
@@ -70,21 +78,26 @@ async def check(client, M, argv):
 	"""The actual function called by main"""
 	opts, argv = parse_flags(argv)
 	ulist = argv[1:]
+	
+	if(opts["agent"]):
+		await getUserAgent(client, M, argv)
+		return
+	
 	if(ulist == []):
 		await client.send_message(M.channel, "?")
 	else:
 		for url in ulist:
 			await try_and_send(client, M, url, opts=opts)
+	try_url.cache.cache.save()
 
 async def getUserAgent(client, M, argv):
-	await client.send_message(M.channel, "```\n"+client.curl_agent+"\n```")
+	await client.send_message(M.channel, "`{}`".format(settings.USERAGENT))
 
 
-# Unit test.
 if(__name__ == "__main__"):
-	if("-v" in sys.argv):
-		curl_verb = True
-	else:
-		curl_verb = False
-	code = try_url("https://tinyimg.io/i/HlKgkKP.png", curl_verb=curl_verb)
-	print(code)
+	import sys
+	opts, argv = parse_flags(sys.argv)
+	opts["useragent"] = settings.USERAGENT
+	ulist = argv[1:]
+	for url in ulist:
+		try_urls(url, opts=opts)

@@ -16,7 +16,7 @@ class Cache:
 
 	def save(self):
 		with open(CACHEFILE, "w") as f:
-			print(json.dumps(self.cache, sort_keys=True, separators=(',', ':')))
+			f.write(json.dumps(self.cache, sort_keys=True, separators=(',', ':')))
 	
 	def load(self):
 		with open(CACHEFILE, "r") as f:
@@ -28,7 +28,14 @@ class Cache:
 	def add(self, url, code):
 		self.cache[url] = code
 
+class Fake:
+	def get(self, url):
+		return None
+	def add(self, url, code):
+		pass
+
 cache = Cache()
+fake = Fake()
 
 async def getcache(client, M, argv):
 	cache.save()

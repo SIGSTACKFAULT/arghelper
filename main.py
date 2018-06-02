@@ -1,14 +1,9 @@
 #!/usr/bin/python3
 import discord, json, pycurl
 import check, cache
+from settings import *
 
 
-VERSION="0.1"
-PREFIX="%"
-USERAGENT = "sbhelperbot/{bot_version} ({pycurl_version})".format(
-	bot_version=VERSION,
-	pycurl_version=pycurl.version
-)
 
 with open("token", "r") as f:
 	TOKEN = f.read().rstrip()
