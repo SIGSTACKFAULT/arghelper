@@ -1,5 +1,4 @@
-import pycurl, zlib, discord
-
+import pycurl
 WHOAMI="arghelper"
 URL="https://github.com/Blacksilver42/arghelper"
 VERSION="1.0.0"

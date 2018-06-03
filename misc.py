@@ -1,9 +1,10 @@
-import discord, settings
+import pycurl, zlib, discord
+import settings
 
 def embed_version():
 	em = discord.Embed(
 		title="{i} {v} \"{vs}\"".format(i=settings.WHOAMI, v=settings.VERSION, vs=settings.VERSIONSTRING),
-		url=URL
+		url=settings.URL
 	)
 	em.add_field(name="discord.py", value=discord.__version__)
 	em.add_field(name="PycURL", value=pycurl.version_info()[1])
