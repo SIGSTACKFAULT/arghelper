@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import discord, pycurl, sys
 import try_url, settings
 
@@ -28,7 +29,9 @@ def try_urls(thing, opts={}):
 	out = []
 	for permutation, base in p.items():
 		code = try_url.try_url(permutation, opts=opts)
-		if((code in bases[base]) or (opts.get("verbose", False) == True)):
+		if((code in bases[base])):
+			out.append("{url} - {code}".format(url=permutation, code=code))
+		elif(opts.get("verbose", False) == True):
 			out.append("<{url}> - {code}".format(url=permutation, code=code))
 	
 	o = out#.sort()
@@ -47,8 +50,6 @@ def parse_flags(argv):
 	opts = {
 		"nocache" : False,
 		"verbose" : False,
-		"agent"   : False,
-		"version" : False
 	}
 	opt_map = {
 		"nocache" : {
@@ -58,12 +59,6 @@ def parse_flags(argv):
 		"verbose" : {
 			True : ["-v", "--verbose"]
 		},
-		"agent" : {
-			True : ["--agent"]
-		},
-		"version" : {
-			True : ["-V", "--version"]
-		}
 	}
 	for option, triggers in opt_map.items():
 		for trigger, flags in triggers.items():
@@ -81,13 +76,6 @@ async def check(client, M, argv):
 	opts, argv = parse_flags(argv)
 	ulist = argv[1:]
 	
-	if(opts["agent"]):
-		await getUserAgent(client, M, argv)
-		return
-	elif(opts["version"]):
-		await getVersion(client, M, argv)
-		return
-	
 	if(ulist == []):
 		await client.send_message(M.channel, "?")
 	else:
@@ -95,16 +83,12 @@ async def check(client, M, argv):
 			await try_and_send(client, M, url, opts=opts)
 	try_url.cache.cache.save()
 
-async def getUserAgent(client, M, argv):
-	await client.send_message(M.channel, "`{}`".format(settings.USERAGENT))
-async def getVersion(client, M, argv):
-	await client.send_message(M.channel, settings.human_version())
 
 
 if(__name__ == "__main__"):
 	import sys
 	opts, argv = parse_flags(sys.argv)
-	opts["useragent"] = settings.USERAGENT
 	ulist = argv[1:]
 	for url in ulist:
 		try_urls(url, opts=opts)
+	try_url.cache.cache.save()

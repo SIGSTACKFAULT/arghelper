@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import discord, json, pycurl
-import check, cache
-from settings import *
+import check, cache, settings
 
 
 
@@ -11,14 +10,11 @@ with open("token", "r") as f:
 
 client = discord.Client()
 
-client.bot_version = VERSION
-client.bot_prefix = PREFIX
-client.curl_agent = USERAGENT
-
 cmds = {
 	"check"	: check.check,
-	"useragent" : check.getUserAgent,
-	"getcache" : cache.getcache
+	"getcache" : cache.getcache,
+	"agent"	: settings.getUserAgent,
+	"version" : settings.getVersion
 }
 
 @client.event
@@ -29,7 +25,7 @@ async def on_ready():
 @client.event
 async def on_message(M):
 	for key, value in cmds.items():
-		if(M.content.startswith(PREFIX + key)):
+		if(M.content.startswith(settings.PREFIX + key)):
 			argv = M.content.split()
 			await value(client, M, argv)
 			return

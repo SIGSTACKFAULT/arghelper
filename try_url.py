@@ -9,7 +9,7 @@ def blind_try(url, agent=None):
 		curl.setopt(curl.USERAGENT, agent)
 	curl.perform()
 	code = curl.getinfo(pycurl.HTTP_CODE)
-	print("> HEAD  {url:40}:{code}".format(url=url, code=code))
+	print("> HEAD   {url:40}:{code}".format(url=url, code=code))
 	return code
 
 def blind_try_cached(url, C, agent=None):
@@ -36,5 +36,5 @@ def try_url(url, opts={}):
 		arg_cache = cache.cache
 	
 	r = blind_try_cached(url, arg_cache, agent=agent)
-	cache.cache.save()
+	#cache.cache.save()
 	return r
