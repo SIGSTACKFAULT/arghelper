@@ -1,1 +1,1 @@
-* Embeds.
+Woah, this bot is feature-complete!

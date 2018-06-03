@@ -2,7 +2,7 @@ import pycurl, zlib, discord
 
 WHOAMI="arghelper"
 URL="https://github.com/Blacksilver42/arghelper"
-VERSION="0.3.2"
+VERSION="1.0.0"
 VERSIONSTRING="The Zipper"
 PREFIX="%"
 USERAGENT = "{whoami}/{bot_version} ({pycurl_version})".format(
