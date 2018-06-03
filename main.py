@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import discord, json, pycurl
-import check, cache, settings
+import check, cache, settings, misc
 
 
 
@@ -13,8 +13,8 @@ client = discord.Client()
 cmds = {
 	"check"	: check.check,
 	"getcache" : cache.getcache,
-	"agent"	: settings.getUserAgent,
-	"version" : settings.getVersion
+	"agent"	: misc.getUserAgent,
+	"version" : misc.getVersion
 }
 
 @client.event
