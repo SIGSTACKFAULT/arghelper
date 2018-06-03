@@ -34,7 +34,9 @@ def try_url(url, opts={}):
 		arg_cache = cache.fake
 	else:
 		arg_cache = cache.cache
-	
-	r = blind_try_cached(url, arg_cache, agent=agent)
-	#cache.cache.save()
-	return r
+	try:
+		r = blind_try_cached(url, arg_cache, agent=agent)
+	except pycurl.error:
+		return None
+	else:
+		return r
